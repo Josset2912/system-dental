@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,3 +24,10 @@ Route::get('/especialidades/{specialty}/edit', [App\Http\Controllers\SpecialtyCo
 Route::post('/especialidades', [App\Http\Controllers\SpecialtyController::class, 'sendData']);
 Route::put('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyController::class, 'update']);
 Route::delete('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyController::class, 'destroy']);
+
+Route::resource('pacientes', PatientController::class)->except([
+    'show',
+    'destroy',
+])->parameters([
+    'pacientes' => 'patient'
+])->middleware('auth');
