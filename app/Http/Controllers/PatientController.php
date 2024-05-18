@@ -6,6 +6,7 @@ use App\Http\Requests\Patient\StoreRequest;
 use App\Http\Requests\Patient\UpdateRequest;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class PatientController extends Controller
 {
@@ -14,13 +15,7 @@ class PatientController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->query('search');
-
-        $patients = Patient::searchByNombres($search)
-                ->orWhere
-                ->searchByCorreo($search)
-                ->get();
-
+        $patients = User::all();
         return view('patients.index', compact('patients'));
     }
 
@@ -29,23 +24,22 @@ class PatientController extends Controller
      */
     public function create()
     {
-        //
+
+        return view('patients.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validated();
 
-        Patient::create($validated);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Patient $patient)
+    public function show($id)
     {
         //
     }
@@ -55,23 +49,21 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient)
     {
-        dd('edit', $patient->toJson());
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, Patient $patient)
+    public function update(Request $request,$id)
     {
-        $validated = $request->validated();
 
-        $patient->update($validated);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Patient $patient)
+    public function destroy($id)
     {
         //
     }

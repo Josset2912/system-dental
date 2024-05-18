@@ -18,7 +18,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link " href="./examples/profile.html">
+        <a class="nav-link " href="/pacientes">
             <i class="fas fa-bed text-warning"></i> Pacientes
         </a>
     </li>

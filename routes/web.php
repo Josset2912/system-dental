@@ -25,9 +25,7 @@ Route::post('/especialidades', [App\Http\Controllers\SpecialtyController::class,
 Route::put('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyController::class, 'update']);
 Route::delete('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyController::class, 'destroy']);
 
-Route::resource('pacientes', PatientController::class)->except([
-    'show',
-    'destroy',
-])->parameters([
-    'pacientes' => 'patient'
-])->middleware('auth');
+
+
+//Rutas Pacientes
+Route::resource('pacientes', 'App\Http\Controllers\PatientController');

@@ -10,59 +10,69 @@
                 <h3 class="mb-0"> Pacientes</h3>
             </div>
             <div class="col text-right">
-                <a href="{{url('/patientes/create')}}" class="btn btn-sm btn-primary">Nuevo paciente</a>
+                <a href="{{url('/pacientes/create')}}" class="btn btn-sm btn-primary">Nuevo Paciente</a>
             </div>
         </div>
     </div>
-    <!-- <div class="card-body">
+    <div class="card-body">
         @if(session('notification'))
         <div class="alert alert-success" role="alert">
             {{session('notification')}}
         </div>
         @endif
-    </div> -->
+    </div>
     <div class="table-responsive">
         <!--Projects Table -->
         <table class="table align-items-center table-flush">
             <thead class="thead-light">
                 <tr>
-                    <th scope="col">Nombre</th>
+                    <th scope="col">Id Paciente</th>
+                    <th scope="col">Nombres</th>
                     <th scope="col">Apellidos</th>
+                    <th scope="col">Dirección</th>
                     <th scope="col">Correo</th>
                     <th scope="col">Telefono</th>
-                    <th scope="col">Correo</th>
                     <th scope="col">Especialidad</th>
-                    <th scope="col">Fecha de cita</th>
                     <th scope="col">Alergias</th>
-                    <th scope="col">Opciones</th>
+                    <th scope="col">Observaciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($patients as $patient)
+                @foreach($patients as $paciente)
                 <tr>
                     <th scope="row">
-                        {{$patient->nombres}}
+                        {{$paciente->id_paciente}}
+                    </th>
+                    <th>
+                        {{$paciente->nombres}}
                     </th>
                     <td>
-                        {{$patient->apellidos}}
+                        {{$paciente->apellidos}}
                     </td>
                     <td>
-                        {{$patient->correo}}
+                        {{$paciente->direccion}}
                     </td>
                     <td>
-                        {{$patient->telefono}}
+                        {{$paciente->correo}}
                     </td>
                     <td>
-                        {{$patient->especialidad}}
+                        {{$paciente->telefono}}
                     </td>
                     <td>
-                        {{$patient->cita}}
+                        {{$paciente->especialidad}}
                     </td>
                     <td>
-                        {{$patient->alergias}}
+                        {{$paciente->cita}}
                     </td>
                     <td>
-                        <a href="{{url('/pacientes/'.$patient->id_paciente.'/edit')}}" class="btn btn-sm btn-primary">Editar</a>
+
+                        <form action="{{url('/pacientes/'.$paciente->id)}}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <a href="{{url('/pacientes/'.$paciente->id.'/edit')}}" class="btn btn-sm btn-primary">Editar</a>
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+
                     </td>
                 </tr>
                 @endforeach
