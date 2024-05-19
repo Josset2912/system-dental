@@ -7,7 +7,7 @@
     <div class="card-header border-0">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="mb-0"> Nuevo Paciente</h3>
+                <h3 class="mb-0"> Crear Paciente</h3>
             </div>
             <div class="col text-right">
                 <a href="{{url('/pacientes')}}" class="btn btn-sm btn-success">
@@ -27,58 +27,97 @@
         @endforeach
         @endif
 
-
-        <form action="{{url('/pacientes')}}" method="POST">
-            @csrf
+        <form id="editForm" name="editForm" method="POST" >
             <div class="form-group">
-                <label for="nombres">Nombre del Paciente</label>
-                <input type="text" name="nombres" class="form-control" value="{{old('nombres')}}" required>
+                <label for="nombres">Nombres</label>
+                <input type="text" name="nombres" id="nombres" class="form-control" value="" required>
             </div>
-
             <div class="form-group">
-                <label for="apellidos">Apellido</label>
-                <input type="text" name="apellidos" class="form-control" value="{{old('apellidos')}}">
+                <label for="apellidos">Apellidos</label>
+                <input type="text" name="apellidos" id="apellidos" class="form-control" value="" required>
             </div>
-
             <div class="form-group">
-                <label for="direccion">Dirección</label>
-                <input type="text" name="direccion" class="form-control" value="{{old('direccion')}}">
+                <label for="correo">Correo</label>
+                <input type="email" name="correo" id="correo" class="form-control" value="" required>
             </div>
-
             <div class="form-group">
-                <label for="correo">Email</label>
-                <input type="text" name="correo" class="form-control" value="{{old('correo')}}">
+                <label for="telefono">Teléfono</label>
+                <input type="text" name="telefono" id="telefono" class="form-control" value="" required>
             </div>
-
-            <div class="form-group">
-                <label for="telefono">Celular</label>
-                <input type="text" name="telefono" class="form-control" value="{{old('telefono')}}">
-            </div>
-
             <div class="form-group">
                 <label for="especialidad">Especialidad</label>
-                <input type="text" name="especialidad" class="form-control" value="{{old('especialidad')}}">
+                <input type="text" name="especialidad" id="especialidad" class="form-control" value="" required>
             </div>
-
-            <div class="form-group">
-                <label for="cita">Fecha de la Cita</label>
-                <input type="text" name="cita" class="form-control" value="{{old('cita')}}">
-            </div>
-
             <div class="form-group">
                 <label for="alergias">Alergias</label>
-                <input type="text" name="alergias" class="form-control" value="{{old('alergias')}}">
+                <textarea name="alergias" id="alergias" class="form-control" required></textarea>
             </div>
-
             <div class="form-group">
-                <label for="obervaciones">Observaciones</label>
-                <input type="text" name="obervaciones" class="form-control" value="{{old('obervaciones')}}">
+                <label for="observaciones">Observaciones</label>
+                <textarea name="observaciones" id="observaciones" class="form-control" required></textarea>
             </div>
-
-
-
-            <button type="submit" class="btn btn-sm btn-primary ">Crear Paciente</button>
+            <button  type="submit" id="guardarBtn"  class="btn btn-primary"">Crear</button>
         </form>
+
+
+
     </div>
 </div>
+</div>
 @endsection
+
+
+
+<script>
+
+  
+  window.onload = function() {
+    $('#guardarBtn').click(function(event) {
+        // Evitar el comportamiento predeterminado del botón de enviar formulario
+        event.preventDefault();
+
+        // Capturar el ID del paciente desde el atributo data
+        var pacienteId = $('#pacienteId').val();
+
+        // Obtener los valores de cada campo
+        var nombres = $('#nombres').val();
+        var apellidos = $('#apellidos').val();
+        var correo = $('#correo').val();
+        var telefono = $('#telefono').val();
+        var especialidad = $('#especialidad').val();
+        var alergias = $('#alergias').val();
+        var observaciones = $('#observaciones').val();
+
+        // Crear un objeto con los datos del formulario
+        var formData = {
+            _token: "{{ csrf_token() }}",
+            _method: "POST",
+            nombres: nombres,
+            apellidos: apellidos,
+            correo: correo,
+            telefono: telefono,
+            especialidad: especialidad,
+            alergias: alergias,
+            observaciones: observaciones
+        };
+
+        // Realizar la petición AJAX
+        $.ajax({
+            type: 'post',
+            url: "{{ route('createPatient.crear')}}",
+            data: formData,
+            success: function(data) {
+                // Manejar la respuesta del servidor
+                window.location.href = "{{url('/pacientes')}}";
+                
+            },
+            error: function(xhr, status, error) {
+                // Manejar los errores
+                console.error(error);
+            }
+        });
+    });
+}
+
+
+</script>

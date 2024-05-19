@@ -16,6 +16,11 @@
     <link href="{{asset('js/plugins/@fortawesome/fontawesome-free/css/all.min.css')}}" rel="stylesheet" />
     <!-- CSS Files -->
     <link href="{{asset('css/argon-dashboard.css?v=1.1.2')}}" rel="stylesheet" />
+
+    <link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" rel="stylesheet">
+
+
+
 </head>
 
 <body class="">
@@ -26,7 +31,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Brand -->
-            <a class="navbar-brand pt-0" href="./index.html">
+            <a class="navbar-brand pt-0" href="/home">
                 <img src="{{asset('img/brand/blue.png')}}" class="navbar-brand-img" alt="...">
             </a>
             <!-- User -->
@@ -124,6 +129,8 @@
             @include('includes.panel.footer')
         </div>
     </div>
+
+    @yield('scripts')
     <!--   Core   -->
     <script src="{{asset('js/plugins/jquery/dist/jquery.min.js')}}"></script>
     <script src="{{asset('js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
@@ -133,6 +140,11 @@
     <!--   Argon JS   -->
     <script src="{{asset('js/argon-dashboard.min.js?v=1.1.2')}}"></script>
     <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+
+  <script src="https://cdn.datatables.net/2.0.7/js/dataTables.min.js"></script>
+
+
+
     <script>
         window.TrackJS &&
             TrackJS.install({

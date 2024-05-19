@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SpecialtyController;
+
 
 
 
@@ -25,6 +27,17 @@ Route::post('/especialidades', [App\Http\Controllers\SpecialtyController::class,
 Route::put('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyController::class, 'update']);
 Route::delete('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyController::class, 'destroy']);
 
+
+// pacientes
+// Route::get('/pacientes', [App\Http\Controllers\SpecialtyController::class, 'index']);
+
+// Route::get('/pacientes', [PatientController::class, 'index'])->name('pacientes.index');
+Route::get('/pacientes/creatividad', [PatientController::class, 'crearPaciente'])->name('crearPaciente.index');
+
+
+Route::get('/pacientes/editar', [PatientController::class, 'edit'])->name('editar.index');
+Route::put('/pacientes/update/{valor}', [PatientController::class, 'actualiza'])->name('updatePatient.actualiza');
+Route::post('/pacientes/crear/', [PatientController::class, 'crear'])->name('createPatient.crear');
 
 
 //Rutas Pacientes
