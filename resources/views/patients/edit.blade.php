@@ -29,34 +29,48 @@
 
         <input type="text" class="d-none" value="{{ $paciente->id_paciente}}" id="pacienteId" >
         <form id="editForm" name="editForm" method="POST" >
-            <div class="form-group">
-                <label for="nombres">Nombres</label>
-                <input type="text" name="nombres" id="nombres" class="form-control" value="{{ $paciente->nombres}}" required>
+            <div class="row">
+                <div class="form-group col-4">
+                    <label for="nombres">Nombres</label>
+                    <input type="text" name="nombres" id="nombres" class="form-control" value="{{ $paciente->nombres}}" required>
+                </div>
+                <div class="form-group col-4">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" name="apellidos" id="apellidos" class="form-control" value="{{ $paciente->apellidos}}" required>
+                </div>
+                <div class="form-group col-4">
+                    <label for="apellidos">Fecha</label>
+                    <input type="date" name="apellidos" id="apellidos" class="form-control"  required>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="apellidos">Apellidos</label>
-                <input type="text" name="apellidos" id="apellidos" class="form-control" value="{{ $paciente->apellidos}}" required>
+            <div class="row">
+                <div class="form-group col-4    ">
+                    <label for="correo">Correo</label>
+                    <input type="email" name="correo" id="correo" class="form-control" value="{{ $paciente->correo}}" required>
+                </div>
+                <div class="form-group col-4    ">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" name="telefono" id="telefono" class="form-control" value="{{ $paciente->telefono}}" required>
+                </div>
+                <div class="form-group col-4    ">
+                    <label for="especialidad">Especialidad</label>
+                    <input type="text" name="especialidad" id="especialidad" class="form-control" value="{{ $paciente->especialidad}}" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="correo">Correo</label>
-                <input type="email" name="correo" id="correo" class="form-control" value="{{ $paciente->correo}}" required>
+            <div class="row">
+                <div class="form-group col-4">
+                    <label for="alergias">Alergias</label>
+                    <textarea name="alergias" id="alergias" class="form-control" required>{{ $paciente->alergias}}</textarea>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="telefono">Teléfono</label>
-                <input type="text" name="telefono" id="telefono" class="form-control" value="{{ $paciente->telefono}}" required>
+            <div class="row">
+                <div class="form-group col-12">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea name="observaciones" id="observaciones" class="form-control" required>{{ $paciente->observaciones}}</textarea>
+                </div>
+
             </div>
-            <div class="form-group">
-                <label for="especialidad">Especialidad</label>
-                <input type="text" name="especialidad" id="especialidad" class="form-control" value="{{ $paciente->especialidad}}" required>
-            </div>
-            <div class="form-group">
-                <label for="alergias">Alergias</label>
-                <textarea name="alergias" id="alergias" class="form-control" required>{{ $paciente->alergias}}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="observaciones">Observaciones</label>
-                <textarea name="observaciones" id="observaciones" class="form-control" required>{{ $paciente->observaciones}}</textarea>
-            </div>
+
             <button  type="submit" id="guardarBtn"  class="btn btn-primary"  data-id="{{ $paciente->id }}">Guardar</button>
         </form>
 
@@ -111,3 +125,4 @@
 
 
 </script>
+

@@ -12,11 +12,11 @@
             <i class="ni ni-briefcase-24 text-blue"></i> Especialidades
         </a>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
         <a class="nav-link " href="./examples/maps.html">
             <i class="fas fa-stethoscope text-info"></i> Médicos
         </a>
-    </li>
+    </li> -->
     <li class="nav-item">
         <a class="nav-link " href="/pacientes">
             <i class="fas fa-bed text-warning"></i> Pacientes
@@ -40,13 +40,13 @@
 <ul class="navbar-nav mb-md-3">
     <li class="nav-item">
         <a class="nav-link" href="#">
-            <i class="ni ni-books text-default "></i> Citas
+            <i class="ni ni-books text-default "></i> En proceso
         </a>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
         <a class="nav-link" href="#">
             <i class="ni ni-chart-bar-32 text-warning"></i> Desempeño Médico
         </a>
-    </li>
+    </li> -->
 
 </ul>

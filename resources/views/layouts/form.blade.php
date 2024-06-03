@@ -24,7 +24,7 @@
         <nav class="navbar navbar-top navbar-horizontal navbar-expand-md navbar-dark">
             <div class="container px-4">
                 <a class="navbar-brand" href="{{url('/')}}">
-                    <img src="{{asset('img/brand/white.png')}}" />
+                    <img src="{{asset('img/brand/bdental.png')}}" />
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse-main" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,7 +35,7 @@
                         <div class="row">
                             <div class="col-6 collapse-brand">
                                 <a href="../index.html">
-                                    <img src="{{asset('img/brand/blue.png')}}">
+                                    <img src="{{asset('img/brand/dental.png')}}">
                                 </a>
                             </div>
                             <div class="col-6 collapse-close">
@@ -52,7 +52,7 @@
                         <li class="nav-item">
                             <a class="nav-link nav-link-icon" href="{{route('register')}}">
                                 <i class="ni ni-circle-08"></i>
-                                <span class="nav-link-inner--text">Registrate</span>
+                                <span class="nav-link-inner--text">Registrate now</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -67,13 +67,13 @@
             </div>
         </nav>
         <!-- Header -->
-        <div class="header bg-gradient-primary py-6 py-lg-7">
+        <div class="header bg-gradient-gray py-6 py-lg-7">
             <div class="container">
                 <div class="header-body text-center mb-7">
                     <div class="row justify-content-center">
                         <div class="col-lg-5 col-md-6">
                             <h1 class="text-white">@yield('title','Bienvenidos')</h1>
-                            <p class="text-lead text-light">Use these awesome forms to login or create new account in your project for free.</p>
+                            <p class="text-lead text-white">Bienvenido a clinica Dental Blanco</p>
                         </div>
                     </div>
                 </div>
