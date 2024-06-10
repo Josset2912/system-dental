@@ -12,15 +12,27 @@ class Patient extends Model
     protected $primaryKey = 'id_paciente';
 
     protected $fillable = [
-        'nombres',
-        'apellidos',
-        'direccion',
-        'correo',
-        'telefono',
-        'especialidad',
-        'cita',
-        'alergias',
-        'observaciones',
+       'id_paciente',
+       'nombres',
+       'apellidos',
+       'direccion',
+       'correo',
+       'telefono',
+       'profesion',
+       'cita',
+       'alergias',
+       'observaciones',
+       'created_at',
+       'updated_at',
+       'fecha',
+       'estado_civil',
+       'edad',
+       'motivo_consulta',
+       'alergico',
+       'alergico_detalle',
+       'medicamento',
+       'problema',
+       'problema_detalle',
     ];
 
 

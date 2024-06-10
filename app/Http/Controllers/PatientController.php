@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Patient\StoreRequest;
 use App\Http\Requests\Patient\UpdateRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Patient;
+use App\Models\PatientDetalle;
 use Illuminate\Http\Request;
 use App\Models\User;
+
 
 
 class PatientController extends Controller
@@ -17,7 +20,7 @@ class PatientController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $patients = Patient::all();
+            $patients = Patient::orderBy('id_paciente', 'desc')->get();
             $dataPacientes = [];
     
             foreach ($patients as $patient) {
@@ -33,13 +36,12 @@ class PatientController extends Controller
                 ';
                 $arrayPacientes = [
                     'nombres' => $patient->nombres,
-                    'apellidos' => $patient->apellidos,
-                    'direccion' => $patient->direccion,
-                    'correo' => $patient->correo,
+                    'estado_civil' => $patient->estado_civil == 1 ? 'Soltero' : 'Casado',
+                    'fecha' => $patient->fecha != "" ? $patient->fecha : "sin datos" ,
                     'telefono' => $patient->telefono, 
-                    'especialidad' => $patient->especialidad,
+                    'profesion' => $patient->profesion ? $patient->profesion : "sin datos"  ,
                     'cita' => $patient->cita,
-                    'alergias' => $patient->alergias,
+                    'motivo_consulta' => $patient->motivo_consulta ? $patient->motivo_consulta : "sin datos" ,
                     'observaciones' => $patient->observaciones,
                     'acciones'=>$editar
                 ];
@@ -54,16 +56,66 @@ class PatientController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    public function upload(Request $request)
+    {
+        $paciente_id = $request->input('paciente_id');
+        $uploadedImages = [];
+    
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                // Obtener el nombre original de la imagen
+                $originalName = $image->getClientOriginalName();
+                
+                // Verificar si ya existe una imagen con este nombre para este paciente
+                $existingImage = PatientDetalle::where('paciente_id', $paciente_id)
+                                               ->where('rutaImagen', 'like', '%' . $originalName)
+                                               ->first();
+    
+                if ($existingImage) {
+                    // Si la imagen ya existe, actualizar la ruta
+                    $path = $image->storeAs('public/', $originalName);
+                    $url = Storage::url($path);
+    
+                    $existingImage->update([
+                        'rutaImagen' => $url,
+                    ]);
+                } else {
+                    // Si la imagen no existe, subir y crear una nueva entrada
+                    $path = $image->storeAs('public/', $originalName);
+                    $url = Storage::url($path);
+    
+                    PatientDetalle::create([
+                        'paciente_id' => $paciente_id,
+                        'rutaImagen' => $url,
+                    ]);
+                }
+    
+                $uploadedImages[] = $url;
+            }
+        }
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Imágenes subidas con éxito',
+            'images' => $uploadedImages
+        ]);
+    }
+
     public function crear(Request $request)
     {
         $paciente = new Patient();  
+
         $paciente->nombres = $request->nombres;
-        $paciente->apellidos = $request->apellidos;
-        $paciente->correo = $request->correo;
+        $paciente->fecha = $request->fecha;
+        $paciente->estado_civil = $request->estado_civil;
+        $paciente->profesion = $request->profesion;
+        $paciente->direccion = $request->direccion;
         $paciente->telefono = $request->telefono;
-        $paciente->especialidad = $request->especialidad;
-        $paciente->alergias = $request->alergias;
+        $paciente->motivo_consulta = $request->motivo;
         $paciente->observaciones = $request->observaciones;
+        $paciente->alergico = $request->alergico[0];
+        $paciente->alergico_detalle = $request->alergico_detalle;
+        $paciente->problema_detalle = $request->problema_detalle;
 
         $paciente->save();
     }
@@ -78,8 +130,14 @@ class PatientController extends Controller
         $id_user = $request->id ; 
 
         $patient = Patient::where('id_paciente' , $id_user)->first();
-  
+        
         $data['paciente'] = $patient;
+
+        $rutas_imagenes = PatientDetalle::where('paciente_id', $id_user)->pluck('rutaImagen')->toArray();
+    
+        // Pasar las rutas de las imágenes a la vista
+        $data['rutas_imagenes'] = $rutas_imagenes;
+
         return view('patients.edit' ,  $data );
     }
 

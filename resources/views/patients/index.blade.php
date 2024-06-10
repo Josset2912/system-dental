@@ -33,12 +33,11 @@
                     <tr>
                         <!-- <th scope="col">Id Paciente</th> -->
                         <th scope="col">Nombres</th>
-                        <th scope="col">Apellidos</th>
-                        <th scope="col">Correo</th>
+                        <th scope="col">Estado civil</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Profesión</th>
                         <th scope="col">Telefono</th>
-                        <th scope="col">Especialidad</th>
-                        <th scope="col">Alergias</th>
-                        <th scope="col">Observaciones</th>
+                        <th scope="col">motivo</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
@@ -87,12 +86,11 @@
             ajax: "{{ route('pacientes.index') }}",
             columns: [
                 { data: 'nombres' },
-                { data: 'apellidos' },
-                { data: 'correo' },
+                { data: 'estado_civil' },
+                { data: 'fecha' },
+                { data: 'profesion' },
                 { data: 'telefono' },
-                { data: 'especialidad' },
-                { data: 'alergias' },
-                { data: 'observaciones' },
+                { data: 'motivo_consulta' },
                 { data: 'acciones' }
             ],
             language: {
@@ -112,18 +110,19 @@
                 next: ">",
                 last: ">>"
             },
-            aria: {
-                sortAscending: ": Activar para ordenar la columna de manera ascendente",
-                sortDescending: ": Activar para ordenar la columna de manera descendente"
-            }
+            // aria: {
+            //     sortAscending: ": Activar para ordenar la columna de manera ascendente",
+            //     sortDescending: ": Activar para ordenar la columna de manera descendente"
+            // }
         },
             processing: true,
+            ordering: false 
         } );
 
         $(document).on('click', '.levantarModal', function() {
             var data = $('#myTable').DataTable().row($(this).parents('tr')).data();
-            $('#nombrePaciente').text(data.nombres + ' ' + data.apellidos);
-            $('#correoPaciente').text(data.correo);
+            $('#nombrePaciente').text(data.nombres + ' ' + data.estado_civil);
+            $('#correoPaciente').text(data.fecha);
             $('#telefonoPaciente').text(data.telefono);
             $('#especialidadPaciente').text(data.especialidad);
             $('#alergiasPaciente').text(data.alergias);

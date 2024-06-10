@@ -34,6 +34,8 @@ Route::delete('/especialidades/{specialty}', [App\Http\Controllers\SpecialtyCont
 // Route::get('/pacientes', [PatientController::class, 'index'])->name('pacientes.index');
 Route::get('/pacientes/creatividad', [PatientController::class, 'crearPaciente'])->name('crearPaciente.index');
 
+Route::post('/upload', [PatientController::class, 'upload'])->name('upload');
+
 
 Route::get('/pacientes/editar', [PatientController::class, 'edit'])->name('editar.index');
 Route::put('/pacientes/update/{valor}', [PatientController::class, 'actualiza'])->name('updatePatient.actualiza');
