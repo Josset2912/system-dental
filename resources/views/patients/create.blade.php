@@ -47,7 +47,7 @@
             <form id="editForm" name="editForm" method="POST">
                 <div class="row">
                     <div class="form-group col-8">
-                        <label for="nombres">Nombre Completo</label>
+                        <label for="nombres">Nombre Completo (obligatorio *)</label>
                         <input type="text" name="nombres" id="nombres" class="form-control" value="" required>
                     </div>
                     <div class="form-group col-4">
@@ -101,10 +101,8 @@
                                 <div class="row mt-2 ml-2 mb-2">
                                     <input type="file" name="images[]" id="images" accept="image/*" multiple>
                                 </div>
-                                <div>
-                                    <div class="preview-container" id="preview-container"></div>
-                                    <button type="button" class="btn btn-dark" id="uploadBtn">Subir </button>
-                                </div>
+                                <div id="preview-container"></div>
+
                             </div>
                         </div>
                     </div>
@@ -113,19 +111,7 @@
 
                 <hr>
 
-                <div class="row m-2">
-                    <p>
-                        <a class="btn btn-success" data-toggle="collapse" href="#collapseExample" role="button"
-                            aria-expanded="false" aria-controls="collapseExample">
-                            Ver Odontograma
-                        </a>
-                    </p>
-                    <div class="collapse" id="collapseExample">
-                        <div class="row justify-content-center mt-2 mb-2">
-                            <img src="{{ asset('img/brand/odontograma.png') }}" class="w-75" />
-                        </div>
-                    </div>
-                </div>
+                <!-- aqui va el odontograma -->
 
                 <div class="row">
                     <div class="form-group col-12">
@@ -191,33 +177,7 @@
 
                 <hr>
 
-                <div class="row flex-column m-2">
-                    <div class="mb-3">
-                        <a class="btn btn-success" data-toggle="collapse" href="#planotratamiento" role="button"
-                            aria-expanded="false" aria-controls="collapseExample">
-                            Plano de tratamiento
-                        </a>
-                    </div>
-                    <div class="collapse" id="planotratamiento">
-                        <div class="row">
-                            <div class="form-group col-6">
-                                <label for="fecha_inicio">Fecha de inicio</label>
-                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control"
-                                    required>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="fecha_fin">Fecha de fin</label>
-                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" required>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="detalles_tratamiento">Detalles</label>
-                                <textarea name="detalles_tratamiento" id="detalles_tratamiento" class="form-control" required></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-left">
                     <button type="submit" id="guardarBtn" class="btn btn-primary">Crear paciente</button>
                 </div>
             </form>
@@ -227,102 +187,148 @@
 
 <script>
     window.onload = function() {
-        $('#guardarBtn').click(function(event) {
-            event.preventDefault();
-            var formData = {
-                _token: "{{ csrf_token() }}",
-                nombres: $('#nombres').val(),
-                fecha: $('#fecha').val(),
-                estado_civil: $('#estado_civil').val(),
-                profesion: $('#profesion').val(),
-                direccion: $('#direccion').val(),
-                telefono: $('#telefono').val(),
-                motivo: $('#motivo').val(),
-                observaciones: $('#observaciones').val(),
-                alergico: $("input[name='alergico[]']:checked").map(function() {
-                    return this.value;
-                }).get(),
-                alergico_detalle: $('#alergico_detalle').val(),
-                medicamento: $("input[name='medicamento[]']:checked").map(function() {
-                    return this.value;
-                }).get(),
-                problema: $("input[name='problema_salud[]']:checked").map(function() {
-                    return this.value;
-                }).get(),
-                problema_detalle: $('#problema_detalle').val(),
-                fecha_inicio: $('#fecha_inicio').val(),
-                fecha_fin: $('#fecha_fin').val(),
-                detalles_tratamiento: $('#detalles_tratamiento').val()
-            };
-            $.ajax({
-                type: 'post',
-                url: "{{ route('createPatient.crear') }}",
-                data: formData,
-                success: function(data) {
-                    // Manejar la respuesta del servidor
-                    window.location.href = "{{ url('/pacientes') }}";
-                },
-                error: function(xhr, status, error) {
-                    // Manejar los errores
-                    console.error(error);
-                }
-            });
-            console.log(formData);
-        });
 
-        document.getElementById('images').addEventListener('change', function(event) {
-            const files = event.target.files;
-            const previewContainer = document.getElementById('preview-container');
-            previewContainer.innerHTML = ''; // Clear previous previews
-
-            Array.from(files).forEach(file => {
-                if (file) {
-                    const imgElement = document.createElement('img');
-                    imgElement.classList.add('preview-image');
-                    imgElement.src = URL.createObjectURL(file);
-                    previewContainer.appendChild(imgElement);
-                }
-            });
-        });
-
-
-        $(document).ready(function() {
-            $('#uploadBtn').click(uploadImages);
-        });
-
-        function uploadImages() {
-            const files = document.getElementById('images').files;
-            const formData = new FormData();
-
-            if (files.length === 0) {
-                alert('Por favor, selecciona al menos una imagen antes de subir.');
-                return;
-            } else {
-                for (const file of files) {
-                    formData.append('images[]', file);
-                }
-                formData.append('paciente_id', '34'); 
+            $('#guardarBtn').click(function(event) {
+                event.preventDefault();
+                var formData = {
+                    _token: "{{ csrf_token() }}",
+                    nombres: $('#nombres').val(),
+                    fecha: $('#fecha').val(),
+                    estado_civil: $('#estado_civil').val(),
+                    profesion: $('#profesion').val(),
+                    direccion: $('#direccion').val(),
+                    telefono: $('#telefono').val(),
+                    motivo: $('#motivo').val(),
+                    observaciones: $('#observaciones').val(),
+                    alergico: $("input[name='alergico[]']:checked").map(function() {
+                        return this.value;
+                    }).get(),
+                    alergico_detalle: $('#alergico_detalle').val(),
+                    medicamento: $("input[name='medicamento[]']:checked").map(function() {
+                        return this.value;
+                    }).get(),
+                    problema: $("input[name='problema_salud[]']:checked").map(function() {
+                        return this.value;
+                    }).get(),
+                    problema_detalle: $('#problema_detalle').val(),
+                    fecha_inicio: $('#fecha_inicio').val(),
+                    fecha_fin: $('#fecha_fin').val(),
+                    detalles_tratamiento: $('#detalles_tratamiento').val()
+                };
                 $.ajax({
-                    url: '{{ route('upload') }}',
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    processData: false,
-                    contentType: false,
+                    type: 'post',
+                    url: "{{ route('createPatient.crear') }}",
                     data: formData,
                     success: function(data) {
-                        if (data.success) {
-                            alert('Imágenes subidas con éxito');
-                        } else {
-                            alert('Error al subir imágenes');
-                        }
+                        // Manejar la respuesta del servidor
+                        var pacienteId = data.id;
+                        console.log("ID del paciente:", pacienteId);
+                        // Llamar a la función de carga de imágenes pasando el ID del paciente
+                        const files = document.getElementById('images').files;
+                        if (files.length !== 0) {
+                            uploadImages(pacienteId);
+                        } 
+                        window.location.href = "{{ url('/pacientes') }}";
+
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error:', error);
+                        // Manejar los errores
+                        console.error(error);
                     }
                 });
+                console.log(formData);
+            });
+
+
+            document.getElementById('images').addEventListener('change', function(event) {
+                const files = event.target.files;
+                const previewContainer = document.getElementById('preview-container');
+                const noImagesMessage = document.getElementById('no-images');
+
+                // Verificar si el contenedor de imágenes ya existe
+                let imageContainer = previewContainer.querySelector('.image-container');
+
+                // Si no hay imágenes previas, ocultar el mensaje correspondiente
+                if (noImagesMessage) {
+                    noImagesMessage.style.display = 'none';
+                }
+
+                // Si no hay un contenedor de imágenes, crear uno nuevo
+                if (!imageContainer) {
+                    imageContainer = document.createElement('div');
+                    imageContainer.classList.add('image-container');
+                    previewContainer.appendChild(imageContainer);
+                }
+
+                // Iterar sobre cada archivo seleccionado
+                Array.from(files).forEach(file => {
+                    if (file) {
+                        // Crear elemento de imagen
+                        const imgElement = document.createElement('img');
+                        imgElement.classList.add('preview-image');
+
+                        // Crear URL temporal para la imagen seleccionada
+                        const url = URL.createObjectURL(file);
+                        imgElement.src = url;
+
+                        // Crear botón de eliminar
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'top-2', 'rounded');
+                        deleteButton.innerHTML = '<span class="bg-danger">X</span>';
+                        deleteButton.addEventListener('click', function() {
+                            imgElement
+                                .remove(); // Eliminar la imagen al hacer clic en el botón de eliminar
+                            deleteButton.remove(); // Eliminar el botón de eliminar
+                            if (!previewContainer.querySelector('.preview-image')) {
+                                // Si ya no hay más imágenes, mostrar el mensaje de no imágenes
+                                noImagesMessage.style.display = 'block';
+                            }
+                        });
+
+                        // Agregar la imagen y el botón de eliminar al contenedor de imágenes
+                        imageContainer.appendChild(imgElement);
+                        imageContainer.appendChild(deleteButton);
+                    }
+                });
+            });
+
+            function uploadImages(pacienteId) {
+                const files = document.getElementById('images').files;
+                const formData = new FormData();
+
+                if (files.length === 0) {
+                    alert('Por favor, selecciona al menos una imagen antes de subir.');
+                    return;
+                } else {
+                    for (const file of files) {
+                        formData.append('images[]', file);
+                    }
+                    formData.append('paciente_id', pacienteId);
+                    $.ajax({
+                        url: '{{ route('upload') }}',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        success: function(data) {
+                            if (data.success) {
+                                alert('Imágenes subidas con éxito');
+                            } else {
+                                alert('Error al subir imágenes');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+
+
+
             }
+
         }
-    }
 </script>

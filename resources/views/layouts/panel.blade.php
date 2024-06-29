@@ -120,7 +120,7 @@
         </nav>
         <!-- End Navbar -->
         <!-- Header -->
-        <div class="header bg-gradient-primary pb-8 pt-4 pt-md-6">
+        <div class="header bg-gradient-orange pb-8 pt-4 pt-md-6">
 
         </div>
         <div class="container-fluid mt--7">

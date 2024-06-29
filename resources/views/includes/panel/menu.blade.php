@@ -39,8 +39,8 @@
 <!-- Navigation -->
 <ul class="navbar-nav mb-md-3">
     <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="ni ni-books text-default "></i> En proceso
+        <a class="nav-link" href="{{route('inicio.index')}}">
+            <i class="ni ni-single-copy-04 text-success"></i> Cotizaciones
         </a>
     </li>
     <!-- <li class="nav-item">

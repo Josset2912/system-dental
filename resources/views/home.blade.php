@@ -25,15 +25,15 @@
             font-size: 2rem;
         }
         .card-imagen1 {
-            height: 350px; 
+            height: 500px; 
             background-size: cover;
             border-radius:10px;
-            background-repeat: repeat;
+            background-repeat: no-repeat;
             background-position: center;
-            background-image: url('https://img.freepik.com/foto-gratis/profesional-herramientas-dentista-silla-oficina-dental_1204-394.jpg?t=st=1717784966~exp=1717788566~hmac=1eae04c4289f1a7eea0a2cd0d9aa45c44d16709f8c1b0282547556cfaaf196e6&w=1380'); 
+            background-image: url("{{asset('img/brand/fondo_home.png')}}")
         }
       
-    </style>
+</style>
 
 <div class="row">
     <div class="col-md-12 mb-4">
@@ -58,7 +58,7 @@
             <div class="card-header bg-teal">
                 <div>
                     <h2 class="text-white">Pacientes</h2>
-                    <p class="text-white display-1"> 1</p>
+                    <p class="text-white display-1">{{ $patientsCount }}</p>
                 </div>
                 <i class="card-icon fas fa-user"></i>
             </div>
@@ -70,7 +70,7 @@
             <div class="card-header bg-primary">
                 <div>
                     <h2 class="text-white">Especialidades</h2>
-                    <p class="text-white display-1"> 2</p>
+                    <p class="text-white display-1">1</p>
                 </div>
                 <i class="card-icon fa fa-archive"></i>
             </div>
@@ -82,7 +82,7 @@
             <div class="card-header bg-success">
                 <div>
                     <h2 class="text-white">Cotizaciones</h2>
-                    <p class="text-white display-1"> 3</p>
+                    <p class="text-white display-1">{{$quotationsCount}}</p>
                 </div>
                 <i class="card-icon fas fa-calendar"></i>
             </div>

@@ -62,11 +62,11 @@
       </div>
       <div class="modal-body">
         <p><strong>Nombre:</strong> <span id="nombrePaciente"></span></p>
-        <p><strong>Correo:</strong> <span id="correoPaciente"></span></p>
-        <p><strong>Teléfono:</strong> <span id="telefonoPaciente"></span></p>
-        <p><strong>Especialidad:</strong> <span id="especialidadPaciente"></span></p>
-        <p><strong>Alergias:</strong> <span id="alergiasPaciente"></span></p>
-        <p><strong>Observaciones:</strong> <span id="observacionesPaciente"></span></p>
+        <p><strong>Estado civil:</strong> <span id="estado_civil"></span></p>
+        <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+        <p><strong>Profesión:</strong> <span id="profesion"></span></p>
+        <p><strong>Telefono:</strong> <span id="telefono"></span></p>
+        <p><strong>Motivo:</strong> <span id="motivo_consulta"></span></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -121,14 +121,38 @@
 
         $(document).on('click', '.levantarModal', function() {
             var data = $('#myTable').DataTable().row($(this).parents('tr')).data();
-            $('#nombrePaciente').text(data.nombres + ' ' + data.estado_civil);
-            $('#correoPaciente').text(data.fecha);
-            $('#telefonoPaciente').text(data.telefono);
-            $('#especialidadPaciente').text(data.especialidad);
-            $('#alergiasPaciente').text(data.alergias);
-            $('#observacionesPaciente').text(data.observaciones);
+            $('#nombrePaciente').text(data.nombres );
+            $('#estado_civil').text(data.estado_civil);
+            $('#fecha').text(data.fecha);
+            $('#profesion').text(data.profesion);
+            $('#motivo').text(data.motivo);
+            $('#telefono').text(data.telefono);
+            $('#motivo_consulta').text(data.motivo_consulta);
             $('#exampleModal').modal('show');
         });
+
+        $(document).on('click', '.eliminarPaciente', function() {
+            var id = $(this).data('id');
+            if (confirm('¿Está seguro de que desea eliminar este paciente?')) {
+                $.ajax({
+                    url: '{{ route("eliminarPaciente") }}', // Ruta para eliminar paciente
+                    type: 'DELETE',
+                    data: {
+                        id: id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Paciente eliminado exitosamente');
+                            $('#myTable').DataTable().ajax.reload();
+                        } else {
+                            alert('Hubo un error al eliminar el paciente');
+                        }
+                    }
+                });
+            }
+        });
+
     };
 </script>
 

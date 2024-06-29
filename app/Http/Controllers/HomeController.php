@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Patient;
+use App\Models\Cotizaciones;
 
 class HomeController extends Controller
 {
@@ -23,6 +25,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+
+        $patientsCount = Patient::count();
+
+        // Obtener la cantidad de cotizaciones
+        $quotationsCount = Cotizaciones::count();
+
+        return view('home', [
+            'patientsCount' => $patientsCount,
+            'quotationsCount' => $quotationsCount,
+        ]);
     }
 }
