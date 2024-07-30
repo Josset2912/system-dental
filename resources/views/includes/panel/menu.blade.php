@@ -18,11 +18,25 @@
         </a>
     </li> -->
     <li class="nav-item">
-        <a class="nav-link " href="/pacientes">
+        <a class="nav-link " href="{{url('/pacientes')}}"">
             <i class="fas fa-bed text-warning"></i> Pacientes
         </a>
     </li>
 
+    <li class="nav-item">
+        <a class="nav-link" href="{{route('inicio.index')}}">
+            <i class="ni ni-single-copy-04 text-success"></i> Cotizaciones
+        </a>
+    </li>
+
+    
+</ul>
+<!-- Divider -->
+<hr class="my-3">
+<!-- Heading -->
+<h6 class="navbar-heading text-muted">Opciones</h6>
+<!-- Navigation -->
+<ul class="navbar-nav mb-md-3">
     <li class="nav-item">
         <a class="nav-link" href="{{route('logout')}}" onclick="event.preventDefault(); document.getElementById('formLogout').submit();">
             <i class="fa fa-sign-in-alt"></i> Cerrar Sesión
@@ -30,18 +44,6 @@
         <form action="{{route('logout')}}" method="POST" style="display: none;" id="formLogout">
             @csrf
         </form>
-    </li>
-</ul>
-<!-- Divider -->
-<hr class="my-3">
-<!-- Heading -->
-<h6 class="navbar-heading text-muted">Reportes</h6>
-<!-- Navigation -->
-<ul class="navbar-nav mb-md-3">
-    <li class="nav-item">
-        <a class="nav-link" href="{{route('inicio.index')}}">
-            <i class="ni ni-single-copy-04 text-success"></i> Cotizaciones
-        </a>
     </li>
     <!-- <li class="nav-item">
         <a class="nav-link" href="#">

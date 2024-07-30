@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\CotizacionesController;
 
@@ -11,6 +13,11 @@ use App\Http\Controllers\CotizacionesController;
 Route::get('/', function () {
     return view('auth/login');
 });
+
+Route::get('storage-link', function(){
+    Artisan::call('storage:link');
+});
+
 
 Auth::routes();
 
@@ -43,19 +50,12 @@ Route::delete('/PatientTratamientoListar/eliminar/', [PatientController::class, 
 
 
 Route::post('/upload', [PatientController::class, 'upload'])->name('upload');
-
 Route::post('/pacienteDetalle/crear', [PatientController::class, 'saveTratamiento'])->name('saveTratamiento.index');
-
-Route::post('/pacientes/eliminar', [PatientController::class, 'deleteImage'])->name('deleteImage.index');
-
+Route::post('/pacientes/Imagenes/eliminar', [PatientController::class, 'deleteImage'])->name('deleteImagen.paciente');
 Route::get('/pacientes/editar/', [PatientController::class, 'edit'])->name('editar.index');
-
 Route::put('/pacientes/editar/{valor}', [PatientController::class, 'actualiza'])->name('updatePatient.actualiza');
-
 Route::post('/pacientes/crear/', [PatientController::class, 'crear'])->name('createPatient.crear');
-
 Route::delete('/pacientes/eliminar', [PatientController::class, 'destroy'])->name('eliminarPaciente');
-
 //Rutas Pacientes
 Route::resource('pacientes', 'App\Http\Controllers\PatientController');
 
@@ -63,12 +63,8 @@ Route::resource('pacientes', 'App\Http\Controllers\PatientController');
 // cotizaciones
 
 Route::get('/cotizaciones/', [CotizacionesController::class, 'index'])->name('inicio.index');
-
 Route::get('/cotizaciones/listar/{id}', [CotizacionesController::class, 'listar'])->name('listar.cotizacion');
-
 Route::post('/cotizaciones/', [CotizacionesController::class, 'crear'])->name('crear.cotizacion');
-
 Route::put('/cotizaciones/actualizar/{id}', [CotizacionesController::class, 'update'])->name('actualizar.cotizacion');
-
 Route::delete('/cotizaciones/eliminar/', [CotizacionesController::class, 'destroy'])->name('eliminar.cotizacion');
 

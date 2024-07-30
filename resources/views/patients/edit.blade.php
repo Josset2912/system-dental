@@ -1,4 +1,9 @@
 @extends('layouts.panel')
+@php
+    use Illuminate\Support\Str;
+@endphp
+
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 
 <style>
     .form-check-input-lg {
@@ -12,18 +17,19 @@
     }
 
     .preview-image {
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         border: 1px solid #ddd;
         margin: 10px;
         border-radius: 20px
     }
+
     .diente {
-    position: static;
-    width: 0px;
-    height: auto;
-    margin-left: 50px;
-    display: inline-block;
+        position: static;
+        width: 0px;
+        height: auto;
+        margin-left: 50px;
+        display: inline-block;
     }
 
     .cuadro {
@@ -123,11 +129,15 @@
     }
 
     .click-blue {
-        background-color: blue;
+        background-color: blue !important;
     }
 
     .click-delete {
         background-color: #747F7D !important;
+    }
+
+    .click-extraido {
+        background-color: #11cdef !important;
     }
 
     .kill {
@@ -212,6 +222,23 @@
         cursor: pointer;
     }
 
+    .invisible-radio {
+            display: none;
+    }
+    .opacity-50 {
+        opacity: 0.5;
+    }
+
+    #modalImage {
+        width: 900px;
+        height: 700px;
+        /* object-fit: cover;  */
+        object-fit: fill;
+        border-radius:15px;
+        left:100px;
+    }
+
+
 </style>
 
 @section('content')
@@ -242,13 +269,14 @@
             <input type="text" class="d-none" value="{{ $paciente->id_paciente }}" id="pacienteId">
 
             <div class="row justify-content-start">
-                <a class="btn btn-info btn-sm m-3"
+                <a class="btn btn-dark btn-sm m-3"
                     href="{{ route('PacienteDetalle.tratamiento', $paciente->id_paciente) }}">
                     <i class="fas fa-eye"></i> Tratamiento
                 </a>
             </div>
 
             <form id="editForm" name="editForm" method="POST">
+
                 <div class="row">
                     <div class="form-group col-8">
                         <label for="nombres">Nombre completo</label>
@@ -302,7 +330,9 @@
                 </div>
 
                 <hr>
-
+                <div>
+                    <span>* Subir solo imagenes en formato: JPG, PNG, JPEG</span>
+                </div>
                 <div class="row m-2">
                     <div class="flex-column">
                         <div>
@@ -314,25 +344,27 @@
 
                         <div class="collapse" id="collapseExample2">
                             <div class="row mt-2 ml-2 mb-2">
-                                <input type="file" name="images[]" id="images" accept="image/*" multiple>
+                                <input type="file" class="form-control" name="images[]" id="images" accept="image/*" multiple>
                             </div>
                             <div>
                                 @if (!empty($rutas_imagenes))
                                     <div class="preview-container row" id="preview-container">
                                         @foreach ($rutas_imagenes as $ruta_imagen)
                                             <div class="">
-                                                <img src="{{ $ruta_imagen }}" alt="Imagen del paciente"
-                                                    class="preview-image">
-                                                <button class="btn btn-danger btn-sm top-2 rounded"
-                                                    onclick="deleteImage('{{ $ruta_imagen }}')">
-                                                    <span class="bg-danger">X</span>
-                                                </button>
+                                                <input type="text" class="d-none IdImagenes" value="{{ $ruta_imagen->id }}" id="imagen-{{ $ruta_imagen->id }}">
+                                                <img src="{{ $ruta_imagen->rutaImagen  }}" alt="Imagen del paciente"
+                                                    class="preview-image" style="cursor:pointer">
+                                                <input type="button" 
+                                                    class="btn btn-danger " 
+                                                    onclick="deleteImage('{{ $ruta_imagen->rutaImagen }}', {{ $ruta_imagen->id }})" 
+                                                    style="width:15px;border: none; padding: 0;" 
+                                                    value="X"
+                                                >
                                             </div>
                                         @endforeach
                                     </div>
                                 @else
                                     <div class="preview-container row" id="preview-container">
-
                                     </div>
                                 @endif
                             </div>
@@ -351,60 +383,88 @@
                     </p>
 
                     <div class="collapse" id="collapseExample">
-                            
-                        <div class="row">
-                            <div class="container">
-                                <div class="panel panel-primary">
-                                    
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title"></h3>
+                        <div class="container border">
+                            <div class="panel panel-primary">
+                                
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"></h3>
+                                </div>
+
+                                <div class="d-flex flex-column ">
+                                    <div class="row m-5">
+                                        <div class="col-md-6 mx-auto" id="controls">
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <label id="fractura" class="btn btn-danger active ">
+                                                    <input type="radio" name="options" id="option1"  autocomplete="off" class="invisible-radio"  checked>Fractura
+                                                </label>
+
+                                                <label id="restauracion" class="btn btn-primary" >
+                                                    <input type="radio" name="options" id="option2"  autocomplete="off" class="invisible-radio" > Obturación
+                                                </label>
+
+                                                <label id="extraccion" class="btn btn-secondary" >
+                                                    <input type="radio" name="options" id="option3" autocomplete="off" class="invisible-radio" > Extracción
+                                                </label>
+
+                                                <label id="extraer" class="btn btn-warning " >
+                                                    <input type="radio" name="options" id="option4" autocomplete="off" class="invisible-radio" > A Extraer
+                                                </label>
+
+                                                <label id="extraido" class="btn btn-info " >
+                                                    <input type="radio" name="options" id="option5" autocomplete="off" class="invisible-radio" > Diente ausente
+                                                </label>
+
+                                                <!-- <label id="puente" class="btn btn-primary">
+                                                    <input type="radio" name="options" id="option5" autocomplete="off" class="invisible-radio" > Puente
+                                                </label> -->
+                                                <!-- <label id="borrar" class="btn btn-default">
+                                                    <input type="radio" name="options" id="option6" autocomplete="off" class="invisible-radio" > Borrar
+                                                </label> -->
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="d-flex flex-column ">
-                                        
-                                        <div class="row">
-                                            <div class="col-md-12 ">
-                                                <div id="controls" class="panel panel-default">
-                                                    <div class="d-flex justify-content-center mb-3 ">
-                                                        <div class="btn-group" data-toggle="buttons">
-                                                            <label id="fractura" class="btn btn-danger active d-none">
-                                                                <input type="radio" name="options" id="option1" autocomplete="off" checked>Fractura
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    <div class="row">
 
-                                            <div id="tr" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                            </div>
-                                            <div id="tl" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                            </div>
-                                            <div id="tlr" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right">
-                                            </div>
-                                            <div id="tll" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                            </div>
+                                        <div id="tr" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                         </div>
-
-                                        <div class="row ">
-                                            <div id="blr" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right">
-                                            </div>
-                                            <div id="bll" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                            </div>
-                                            <div id="br" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                            </div>
-                                            <div id="bl" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                            </div>
+                                        <div id="tl" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                         </div>
-
-                                        <div class="row">
-                                         
+                                        <div id="tlr" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right">
                                         </div>
-
+                                        <div id="tll" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        </div>
                                     </div>
+
+                                    <div class="row mt-3">
+                                        <div id="blr" class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right">
+                                        </div>
+                                        <div id="bll" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        </div>
+                                        <div id="br" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        </div>
+                                        <div id="bl" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-around mt-5 mb-4 ">
+                                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 text-left">
+                                            <div style="height: 20px; width:20px; display:inline-block;" class="click-red"></div> = Fractura/Carie
+                                            <br>
+                                            <div style="height: 5px; width:20px; display:inline-block;" class=""> <i style="color:#11cdef;" class="fa fa-times fa-2x"></i></div> = Diente ausente
+                                        </div>
+                                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 text-center">
+                                            <div style="height: 20px; width:20px; display:inline-block;" class="click-blue"></div> = Obturación
+                                        </div>
+                                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 text-right">
+                                            <span style="display:inline:block;"> Extracción</span> = <img style="display:inline:block;" src="{{asset('img/extraccion.png')}}">
+                                            <br> Idicada Para Extracción = <i style="color:red;" class="fa fa-times fa-2x"></i>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -475,28 +535,69 @@
                 <hr>
 
                 
-                <button type="submit" id="guardarBtn" class="btn btn-primary"
-                    data-id="{{ $paciente->id }}">Editar</button>
+                <button type="submit" id="guardarBtn" class="btn btn-success"
+                    data-id="{{ $paciente->id }}">Actualizar</button>
             </form>
         </div>
     </div>
+
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl" style="right:100px">
+            <!-- <div class="modal-content"> -->
+            <!-- <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Imagen en tamaño grande</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div> -->
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Imagen del paciente" class="">
+                </div>
+            <!-- </div> -->
+        </div>
+    </div>
+
 @endsection
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
 <script>
-    
-    function deleteImage(imagePath) {
-        if (confirm('¿Estás seguro de que deseas eliminar esta imagen?')) {
-            $.ajax({
-                url: '{{ route('deleteImage.index') }}', // Your route to handle image deletion
+    function deleteImage(imagePath, idImagenes) {
+        var pacienteId = $('#pacienteId').val();
+        Swal.fire({
+            title: "¿Desea eliminar la imagen?",
+            // text: "cuidado",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, eliminar"
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                url: '{{ route('deleteImagen.paciente') }}', 
                 type: 'POST',
                 data: {
-                    _token: '{{ csrf_token() }}', // Laravel CSRF token for security
-                    path: imagePath
+                    _token: '{{ csrf_token() }}', 
+                    pacienteId: pacienteId,
+                    imagenId: idImagenes
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Imagen eliminada con éxito');
-                        location.reload(); // Reload the page to reflect the changes
+                       
+                        Swal.fire({
+                            position: "center-start",
+                            icon: "success",
+                            title: "Eliminado correctamente",
+                            showConfirmButton: false,
+                            timer: 1000
+                        }).then((result) => {
+                            // Recargar la página después de que se cierre el Swal
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000); // Puedes ajustar el tiempo de espera si es necesario
+                        });
+
+                        // location.reload(); 
                     } else {
                         alert('Error al eliminar la imagen' + response.message);
                     }
@@ -506,7 +607,14 @@
                     alert('Error al eliminar la imagen');
                 }
             });
-        }
+            }
+        });
+        
+         // Swal.fire({
+        // title: "Deleted!",
+        // text: "Your file has been deleted.",
+        // icon: "success"
+        // });
     }
 
     function replaceAll(find, replace, str) {
@@ -526,7 +634,7 @@
             // Dientes Definitivos Cuadrante Derecho (Superior/Inferior)
             var index = i.toString();
             htmlRight += '<div data-name="value" id="dienteindex' + index + '" class="diente">' +
-                '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-info">index' + index + '</span>' +
+                '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="badge badge-info">index' + index + '</span>' +
                 '<div id="tindex' + index + '" class="cuadro click" data-id="t' + index + '">' +
                 '</div>' +
                 '<div id="lindex' + index + '" class="cuadro izquierdo click" data-id="l' + index + '">' +
@@ -541,7 +649,7 @@
 
             // Dientes Definitivos Cuadrante Izquierdo (Superior/Inferior)
             htmlLeft += '<div id="dienteindex' + a + '" class="diente">' +
-                '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-info">index' + a + '</span>' +
+                '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="badge badge-info">index' + a + '</span>' +
                 '<div id="tindex' + a + '" class="cuadro click" data-id="t' + a + '">' +
                 '</div>' +
                 '<div id="lindex' + a + '" class="cuadro izquierdo click" data-id="l' + a + '">' +
@@ -557,7 +665,7 @@
             if (i <= 5) {
                 // Dientes Temporales Cuadrante Derecho (Superior/Inferior)
                 htmlLecheRight += '<div id="dienteLindex' + i + '" style="left: -25%;" class="diente-leche">' +
-                    '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-primary">index' + i + '</span>' +
+                    '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="badge badge-primary">index' + i + '</span>' +
                     '<div id="tlecheindex' + i + '" class="cuadro-leche top-leche click" data-id="tleche' + i + '">' +
                     '</div>' +
                     '<div id="llecheindex' + i + '" class="cuadro-leche izquierdo-leche click" data-id="lleche' + i + '">' +
@@ -574,7 +682,7 @@
             if (a < 6) {
                 // Dientes Temporales Cuadrante Izquierdo (Superior/Inferior)
                 htmlLecheLeft += '<div id="dienteLindex' + a + '" class="diente-leche">' +
-                    '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="label label-primary">index' + a + '</span>' +
+                    '<span style="margin-left: 45px; margin-bottom:5px; display: inline-block !important; border-radius: 10px !important;" class="badge badge-primary">index' + a + '</span>' +
                     '<div id="tlecheindex' + a + '" class="cuadro-leche top-leche click" data-id="tleche' + a + '">' +
                     '</div>' +
                     '<div id="llecheindex' + a + '" class="cuadro-leche izquierdo-leche click" data-id="lleche' + a + '">' +
@@ -587,7 +695,6 @@
                     '</div>' +
                     '</div>';
             }
-
             a++;
         }
 
@@ -607,14 +714,80 @@
                 var id = key.replace('_', '');
                 // $('#' + id).addClass('click-red');
                 $('#' + id).addClass('click-red').addClass('selected'); 
-                
+            }
+            else if (datosBd[key] == 2) {
+                var id = key.replace('_', '');
+             $('#' + id).addClass('click-blue').addClass('selected');
+            }
+            else if (datosBd[key] == 3) {
+                var id = key.replace('_', '');
+             $('#' + id).addClass('click-delete').addClass('selected');
+            }
+            else if (datosBd[key] == 4){
+                var id = key.replace('_', '');
+                var element = $('#' + id);
+                // Asegurar que el elemento tiene posición relativa
+                element.css({
+                    'position': 'relative',
+                    'z-index': '1'
+                });
+                var icon;
+
+                if (element.hasClass("centro-leche")) {
+                    console.log("centrooo");
+                    icon = $('<i style="color:red;" class="fa fa-times fa-2x fa-fw"></i>');
+                    icon.css({
+                        "position": "absolute",
+                        "top": "-10",
+                        "left": "-15",
+                        "z-index": "99"
+                    });
+                } else {
+                    console.log("centro-lecheeeee");
+                    icon = $('<i style="color:red;" class="fa fa-times fa-3x fa-fw"></i>');
+                    icon.css({
+                       "position": "absolute",
+                       "top": "-13",
+                       "left": "-18",
+                        "z-index": "99"
+                    });
+                }
+                element.append(icon);
+            }
+            else if (datosBd[key] == 5){
+                var id = key.replace('_', '');
+                var element = $('#' + id);
+                // console.log(element);
+                var icon;
+                if (element.hasClass("centro-leche")) {
+                    console.log("centrooo");
+                    icon = $('<i style="color:#11cdef;" class="fa fa-times fa-2x fa-fw"></i>');
+                    icon.css({
+                        "position": "absolute",
+                        "top": "-10",
+                        "left": "-15",
+                        "z-index": "99"
+                    });
+                } else {
+                    console.log("centro-lecheeeee");
+                    icon = $('<i style="color:#11cdef;" class="fa fa-times fa-3x fa-fw"></i>');
+                    icon.css({
+                       "position": "absolute",
+                       "top": "-13",
+                       "left": "-18",
+                        "z-index": "99"
+                    });
+                }
+                element.append(icon);
             }
         }
 
         for (var key in datosBd) {
             var id = key.replace('_', '');
-            if (datosBd[key] == 1 && selecciones.indexOf(id) === -1) {
-                selecciones.push(id);
+            if (datosBd[key] >= 1 && selecciones.indexOf(id) === -1) {
+                // selecciones.push(id);
+                selecciones.push({ id: id, valor: datosBd[key] });
+
             }
         }
 
@@ -626,64 +799,211 @@
     var selecciones = [];
     
     var datosBd = {!! json_encode($datosOdontograma) !!};
-    
+
+    var arrayPuente = [];
+
+
     window.onload = function() {
 
         createOdontogram(datosBd,selecciones);
-        
+
         $(".click").click(function(event) {
+
             var id = $(this).attr('id');
             var control = $("#controls").children().find('.active').attr('id');
             var cuadro = $(this).find("input[name=cuadro]:hidden").val();
             console.log(id);
-            // Añadir o eliminar del array de selecciones
-                // Añadir o eliminar del array de selecciones
-            if ($(this).hasClass("selected")) {
-                // Si ya está seleccionado, eliminar
-                $(this).removeClass('selected');
-                var index = selecciones.indexOf(id);
-                if (index !== -1) {
-                    selecciones.splice(index, 1); // Elimina solo la primera instancia encontrada
-                }
-            } else {
-                // Si no está seleccionado, añadir
-                $(this).addClass('selected');
-                selecciones.push(id);
-            }
 
-            // Mostrar el array en la consola
-            console.log("soy selecciones");
-            console.log(selecciones);
+            var valor;
 
             switch (control) {
                 case "fractura":
-                    if ($(this).hasClass("click-blue")) {
-                        $(this).removeClass('click-blue');
-                        $(this).addClass('click-red');
-                    } else {
-                        if ($(this).hasClass("click-red")) {
-                            $(this).removeClass('click-red');
-                        } else {
-                            $(this).addClass('click-red');
+                    valor = 1;
+                    if ($(this).hasClass("click-red")) {
+                        $(this).removeClass('click-red');
+                        $(this).removeClass('selected');
+                        var index = selecciones.findIndex(obj => obj.id === id);
+                        if (index !== -1) {
+                            selecciones.splice(index, 1);
                         }
+                    } 
+                    else if ($(this).hasClass("click-blue") || $(this).hasClass("click-delete"))
+                    {
+                        console.log("no hago nada");
+                        return;
+                    }
+                    else {
+                        $(this).addClass('click-red');
+                        $(this).addClass('selected');
+                        selecciones.push({ id: id, valor: valor });
                     }
                     break;
                 case "restauracion":
-                    if ($(this).hasClass("click-red")) {
-                        $(this).removeClass('click-red');
-                        $(this).addClass('click-blue');
-                    } else {
-                        if ($(this).hasClass("click-blue")) {
-                            $(this).removeClass('click-blue');
-                        } else {
-                            $(this).addClass('click-blue');
+                    valor = 2;
+                    if ($(this).hasClass("click-blue")) {
+                        $(this).removeClass('click-blue');
+                        $(this).removeClass('selected');
+                        var index = selecciones.findIndex(obj => obj.id === id);
+                        if (index !== -1) {
+                            selecciones.splice(index, 1);
                         }
+                    } else if ($(this).hasClass("click-red") || $(this).hasClass("click-delete"))
+                    {
+                        console.log("no hago nada");
+                        return;
+                    }
+                    else{
+                        $(this).addClass('click-blue');
+                        $(this).addClass('selected');
+                        selecciones.push({ id: id, valor: valor });
                     }
                     break;
-               
+                case "extraccion":
+                    valor = 3;
+                    if ($(this).hasClass("click-red") ||  $(this).hasClass("click-blue"))
+                    {
+                        console.log("no hago nada");
+                        return;
+                    }
+                    else if($(this).hasClass("click-delete")){  
+                        $(this).parent().children().each(function(index, el) {
+                            if ($(el).hasClass("click")) {
+                                $(el).removeClass('click-delete');
+                                var childId = $(el).attr('id');
+                                var index = selecciones.findIndex(obj => obj.id === childId);
+                                if (index !== -1) {
+                                    selecciones.splice(index, 1);
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        var dientePosition = $(this).position();
+                        $(this).parent().children().each(function(index, el) {
+                            if ($(el).hasClass("click")) {
+                                $(el).addClass('click-delete');
+                                var childId = $(el).attr('id');
+                                selecciones.push({ id: childId, valor: valor });
+                            }
+                        });
+                    }
+                    break;
+                case "extraer":
+                    valor = 4;
+                    var element = $('#' + id);
+                    
+                    if ($(this).hasClass("click-red") ||  $(this).hasClass("click-blue") ||  $(this).hasClass("click-delete"))
+                    {
+                        console.log("no hago nada");
+                        return;
+                    }
+                    // if (!element.hasClass("centro") && !element.hasClass("centro-leche")) {
+                    else if(element.find('i').length > 0){
+                        element.find('i').remove();
+                        var childId = element.attr('id');
+                        var index = selecciones.findIndex(obj => obj.id === childId);
+                        if (index !== -1) {
+                            selecciones.splice(index, 1);
+                        }
+
+                    }
+                    else if (element.hasClass("centro") || element.hasClass("centro-leche")) {
+                        element.css({
+                            'position': 'relative',
+                            'z-index': '1'
+                        });
+                        $(this).addClass('selected');
+                        var childId = element.attr('id');
+
+                        selecciones.push({ id: childId, valor: valor });
+
+                        var icon;
+                        if (element.hasClass("centro")) {
+                            icon = $('<i style="color:red;" class="fa fa-times fa-3x fa-fw"></i>');
+                            icon.css({
+                                "position": "absolute",
+                                "top": "-13",
+                                "left": "-18",
+                                "z-index": "99"
+                            });
+                        } else {
+                            icon = $('<i style="color:red;" class="fa fa-times fa-2x fa-fw"></i>');
+                            icon.css({
+                                "position": "absolute",
+                                "top": "-10",
+                                "left": "-15",
+                                "z-index": "99"
+                            });
+                        }
+                        element.append(icon);
+                    }
+                    else{
+                        console.log("nadaaaaa");
+                    }
+                    break;
+                case "extraido":
+                    valor = 5;
+                    var element = $('#' + id);
+                     if ($(this).hasClass("click-red") ||  $(this).hasClass("click-blue") ||  $(this).hasClass("click-delete"))
+                    {
+                        console.log("no hago nada");
+                        return;
+                    }
+                    // if (!element.hasClass("centro") && !element.hasClass("centro-leche")) {
+                    else if(element.find('i').length > 0){
+                        element.find('i').remove();
+                        var childId = element.attr('id');
+                        var index = selecciones.findIndex(obj => obj.id === childId);
+                        if (index !== -1) {
+                            selecciones.splice(index, 1);
+                        }
+
+                    }
+                    else if (element.hasClass("centro") || element.hasClass("centro-leche")) {
+                        element.css({
+                            'position': 'relative',
+                            'z-index': '1'
+                        });
+                        $(this).addClass('selected');
+                        var childId = element.attr('id');
+
+                        selecciones.push({ id: childId, valor: valor });
+
+                        var icon;
+                        if (element.hasClass("centro")) {
+                            icon = $('<i style="color:#11cdef;" class="fa fa-times fa-3x fa-fw"></i>');
+                            icon.css({
+                                "position": "absolute",
+                                "top": "-13",
+                                "left": "-18",
+                                "z-index": "99"
+                            });
+                        } else {
+                            icon = $('<i style="color:#11cdef;" class="fa fa-times fa-2x fa-fw"></i>');
+                            icon.css({
+                                "position": "absolute",
+                                "top": "-10",
+                                "left": "-15",
+                                "z-index": "99"
+                            });
+                        }
+                        element.append(icon);
+                    }
+                    else{
+                        console.log("nadaaaaa");
+                    }
+                    break;
+                default:
+                    valor = 0;
+                    break;
             }
 
+            // Mostrar el array en la consola
+            console.log("soy selecciones"); 
+            console.log(selecciones);
+
             return false;
+
         });
 
         $('#guardarBtn').click(function(event) {
@@ -831,11 +1151,6 @@
                     contentType: false,
                     data: formData,
                     success: function(data) {
-                        if (data.success) {
-                            alert('Imágenes subidas con éxito');
-                        } else {
-                            alert('Error al subir imágenes');
-                        }
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
@@ -843,6 +1158,18 @@
                 });
             }
         }
+
+        const previewImages = document.querySelectorAll('.preview-image');
+        const modalImage = document.getElementById('modalImage');
+        const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+
+        previewImages.forEach(image => {
+            image.addEventListener('click', function() {
+            modalImage.src = image.src;
+            imageModal.show();
+            });
+        });
+
 
     }
 </script>

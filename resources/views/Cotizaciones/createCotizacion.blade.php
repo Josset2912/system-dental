@@ -1,15 +1,14 @@
 @extends('layouts.panel')
 @section('styles')
+    <link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" rel="stylesheet">
 @endsection
-<link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 
 @section('content')
     <div class="card shadow">
         <div class="card-header border-0">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="mb-0">Tratamiento Paciente</h3>
+                    <h3 class="mb-0">Cotizaciones</h3>
                 </div>
                 <!-- <a href="{{ route('crearPaciente.index') }}" class="btn btn-sm btn-primary">Nuevo Paciente</a> -->
                 <div class="col text-right">
@@ -29,40 +28,43 @@
 
         <form id="myform">
 
-            <input type="text" id="id_del_paciente" class="d-none" value="{{ $idpaciente }}">
+            <input type="text" id="id_del_paciente" class="d-none">
             <div class="row ml-2 mr-3">
                 <div class="form-group col-2">
                     <label for="fecha">Fecha</label>
                     <input type="date" name="fecha" id="fecha" class="form-control" value="" required>
                 </div>
-                <div class="form-group col-10">
-                    <label for="tratamiento">Tratamiento</label>
-                    <input type="text" name="tratamiento" id="tratamiento" class="form-control" value="" required>
+                <div class="form-group col-8">
+                    <label for="nombres">Nombre completo</label>
+                    <input type="text" name="nombres" id="nombres" class="form-control" value=""
+                        placeholder="Nombre completo" required>
+                </div>
+                <div class="form-group col-2">
+                    <label for="telefono">Telefono</label>
+                    <input type="number" name="telefono" id="telefono" class="form-control" placeholder="99999999"
+                        value="" required>
                 </div>
             </div>
 
             <div class="row m-2">
-                <div class="form-group col-3">
-                    <label for="cita">Cita</label>
-                    <input type="date" name="cita" id="cita" class="form-control" value="" required>
+                <div class="form-group col-10">
+                    <label for="tratamiento">Tratamiento</label>
+                    <input type="text" name="tratamiento" id="tratamiento" class="form-control" value=""
+                        placeholder="Tratamiento general" onchange="calculateSaldo()" required>
                 </div>
-                <div class="form-group col-3">
+                <div class="form-group col-2">
                     <label for="presupuesto">Presupuesto</label>
-                    <input type="number" name="presupuesto" id="presupuesto" class="form-control" value="" onchange="calculateSaldo()" required>
-                </div>
-                <div class="form-group col-3">
-                    <label for="adelanto">Adelanto</label>
-                    <input type="number" name="adelanto" id="adelanto" class="form-control" value="" onchange="calculateSaldo()" required>
-                </div>
-                <div class="form-group col-3">
-                    <label for="saldo">Saldo</label>
-                    <input type="number" name="saldo" id="saldo" class="form-control" value="" required>
+                    <input type="number" name="presupuesto" id="presupuesto" class="form-control" value=""
+                        onchange="calculateSaldo()" placeholder="S/.0000" required>
                 </div>
             </div>
 
             <div class="row ml-4">
+
                 <button type="button" id="guardarBtn" onclick="submitForm()" class="btn btn-dark">Guardar</button>
-                <button type="button" id="editarBtn" onclick="submitEditForm()" class="btn btn-success d-none">Actualizar</button>
+                <button type="button" id="editarBtn" onclick="submitEditForm()"
+                    class="btn btn-success d-none">Editar</button>
+
                 <button type="button" onclick="limpiar()" class="btn btn-gray">Limpiar</button>
 
             </div>
@@ -80,11 +82,10 @@
                         <tr>
                             <!-- <th scope="col">Id Paciente</th> -->
                             <th scope="col">Fecha </th>
+                            <th scope="col">Nombres</th>
+                            <th scope="col">Telefono</th>
                             <th scope="col">Tratamiento</th>
-                            <th scope="col">cita</th>
                             <th scope="col">Presupuesto</th>
-                            <th scope="col">Adelanto</th>
-                            <th scope="col">Saldo</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -95,19 +96,35 @@
                 </table>
             </div>
         </div>
-
     </div>
 
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalles del Paciente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nombre:</strong> <span id="fechaMostrar"></span></p>
+                    <p><strong>Nombres:</strong> <span id="nombresMostrar"></span></p>
+                    <p><strong>Telefono:</strong> <span id="telefonoMostrar"></span></p>
+                    <p><strong>Tratamiento:</strong> <span id="tratamientoMostrar"></span></p>
+                    <p><strong>Presupuesto:</strong> <span id="presupuestoMostrar"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-
-
-
 <script>
-
-
     function calculateSaldo() {
         var presupuesto = parseFloat(document.getElementById('presupuesto').value) || 0;
         var adelanto = parseFloat(document.getElementById('adelanto').value) || 0;
@@ -122,40 +139,31 @@
 
     }
 
-
     function submitForm() {
         // Get form data
         const formData = {
             _token: "{{ csrf_token() }}",
-            id_Paciente: document.getElementById('id_del_paciente').value,
+            nombres: document.getElementById('nombres').value,
             fecha: document.getElementById('fecha').value,
+            telefono: document.getElementById('telefono').value,
             tratamiento: document.getElementById('tratamiento').value,
-            cita: document.getElementById('cita').value,
             presupuesto: document.getElementById('presupuesto').value,
-            adelanto: document.getElementById('adelanto').value,
-            saldo: document.getElementById('saldo').value
         };
 
         // Send AJAX request
         $.ajax({
             type: 'POST',
-            url: "{{ route('saveTratamiento.index') }}", // Replace with your route URL
+            url: "{{ route('crear.cotizacion') }}", // Replace with your route URL
             data: formData,
             success: function(response) {
-                // Handle success response
-                Swal.fire({
-                    position: "center-end",
-                    icon: "success",
-                    title: "Se registro correctamente",
-                    showConfirmButton: false,
-                    timer: 1000
-                }).then((result) => {
+                if (response.success) {
                     $('#myTable').DataTable().ajax.reload();
-                    document.getElementById('myform').reset(); 
-                    document.getElementById('saldo').value = 0;
-
-                });
-
+                    document.getElementById('myform').reset();
+                    // Opcional: redirigir o actualizar la tabla de cotizaciones
+                    window.location.reload(); // Recargar la página
+                } else {
+                    alert(response.message); // Mostrar mensaje de error
+                }
             },
             error: function(xhr, status, error) {
                 // Handle error response
@@ -167,69 +175,68 @@
 
     function submitEditForm() {
         // Get form data
-
         var id = $('#id_del_paciente').val();
-        var url = "{{ route('actualizar.tratamiento', ':id') }}".replace(':id', id);
+        var url = "{{ route('actualizar.cotizacion', ':id') }}".replace(':id', id); // Ruta para actualizar
 
+        // Get form data
         const formData = {
             _token: "{{ csrf_token() }}",
-            id_Paciente: document.getElementById('id_del_paciente').value,
-            fecha: document.getElementById('fecha').value,
-            tratamiento: document.getElementById('tratamiento').value,
-            cita: document.getElementById('cita').value,
-            presupuesto: document.getElementById('presupuesto').value,
-            adelanto: document.getElementById('adelanto').value,
-            saldo: document.getElementById('saldo').value
+            fecha: $('#fecha').val(),
+            nombres: $('#nombres').val(),
+            telefono: $('#telefono').val(),
+            tratamiento: $('#tratamiento').val(),
+            presupuesto: $('#presupuesto').val(),
         };
 
         // Send AJAX request
         $.ajax({
             type: 'PUT',
-            url:url, // Replace with your route URL
+            url: url,
             data: formData,
             success: function(response) {
-                // Handle success response
-                console.log(response);
-                $('#myTable').DataTable().ajax.reload();
-                document.getElementById('myform').reset(); 
-                document.getElementById('saldo').value = 0;
-                $('#guardarBtn').removeClass('d-none');
-                $('#editarBtn').addClass('d-none');
+                if (response.success) {
+                    $('#myTable').DataTable().ajax.reload();
+                    document.getElementById('myform').reset();
+
+                    // Ocultar botón Editar y mostrar botón Guardar
+                    $('#editarBtn').addClass('d-none');
+                    $('#guardarBtn').removeClass('d-none');
+
+                    window.location.reload(); // Recargar la página
+                } else {
+                    alert(response.message); // Mostrar mensaje de error
+                }
             },
             error: function(xhr, status, error) {
-                // Handle error response
                 console.error(xhr.responseText);
-                alert('Error al guardar los datos.');
+                alert('Error al actualizar los datos.');
             }
         });
-    }
 
+    }
 
     window.onload = function() {
         var idPaciente = document.getElementById('id_del_paciente').value; // Get the idPaciente value
-        var ajaxUrl = "{{ route('PatientTratamientoListar.tratamiento', ':idPaciente') }}".replace(':idPaciente', idPaciente);
+        // var ajaxUrl = "{{ route('PatientTratamientoListar.tratamiento', ':idPaciente') }}".replace(':idPaciente', idPaciente);
         $('#myTable').DataTable({
             ajax: {
-            url: ajaxUrl,
+                // url: ajaxUrl,
             },
-          
+
             columns: [{
                     data: 'fecha'
+                },
+                {
+                    data: 'nombres'
+                },
+                {
+                    data: 'telefono'
                 },
                 {
                     data: 'tratamiento'
                 },
                 {
-                    data: 'cita'
-                },
-                {
                     data: 'presupuesto'
-                },
-                {
-                    data: 'adelanto'
-                },
-                {
-                    data: 'saldo'
                 },
                 {
                     data: 'acciones'
@@ -262,22 +269,20 @@
         });
 
 
-        $('#myTable').on('click', '.editarTratamiento', function() {
+        $('#myTable').on('click', '.editarCotizacion', function() {
             var id = $(this).data('id');
             $.ajax({
-                url: "{{ route('listar.tratamiento', ['id' => ':id']) }}".replace(':id',
-                id),
+                url: "{{ route('listar.cotizacion', ['id' => ':id']) }}".replace(':id',
+                    id),
                 type: 'GET',
                 success: function(response) {
                     if (response.success) {
                         $('#id_del_paciente').val(response.data.id);
                         $('#fecha').val(response.data.fecha);
-                        $('#cita').val(response.data.cita);
-                        $('#adelanto').val(response.data.adelanto);
+                        $('#nombres').val(response.data.nombres);
+                        $('#telefono').val(response.data.telefono);
                         $('#tratamiento').val(response.data.tratamiento);
-                        $('#saldo').val(response.data.saldo);
                         $('#presupuesto').val(response.data.presupuesto);
-
 
                         $('#guardarBtn').addClass('d-none');
                         $('#editarBtn').removeClass('d-none');
@@ -294,11 +299,11 @@
         });
 
 
-        $('#myTable').on('click', '.eliminarTratamiento', function() {
+        $('#myTable').on('click', '.eliminarCotizacion', function() {
             var id = $(this).data('id');
             if (confirm('¿Está seguro de que desea eliminar este paciente?')) {
                 $.ajax({
-                    url: '{{ route("eliminar.tratamiento") }}', // Ruta para eliminar paciente
+                    url: '{{ route('eliminar.cotizacion') }}', // Ruta para eliminar paciente
                     type: 'DELETE',
                     data: {
                         id: id,
@@ -315,14 +320,16 @@
             }
         });
 
-
-
-
-
-
-
+        $(document).on('click', '.levantarModal', function() {
+            var data = $('#myTable').DataTable().row($(this).parents('tr')).data();
+            console.log(data);
+            $('#fechaMostrar').text(data.fecha);
+            $('#nombresMostrar').text(data.nombres);
+            $('#telefonoMostrar').text(data.telefono);
+            $('#tratamientoMostrar').text(data.tratamiento);
+            $('#presupuestoMostrar').text(data.presupuesto);
+            $('#exampleModal').modal('show');
+        });
 
     };
-
-
 </script>

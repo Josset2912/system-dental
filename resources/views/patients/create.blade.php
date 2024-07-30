@@ -16,6 +16,7 @@
         height: 200px;
         border: 1px solid #ddd;
         margin: 10px;
+        border-radius:10px;
     }
 </style>
 
@@ -87,30 +88,6 @@
                 </div>
 
                 <hr>
-
-                <div class="row m-2">
-                    <div class="flex-column">
-                        <div>
-                            <a class="btn btn-success" data-toggle="collapse" href="#collapseExample2" role="button"
-                                aria-expanded="false" aria-controls="collapseExample">
-                                Imagenes del paciente
-                            </a>
-                        </div>
-                        <div>
-                            <div class="collapse" id="collapseExample2">
-                                <div class="row mt-2 ml-2 mb-2">
-                                    <input type="file" name="images[]" id="images" accept="image/*" multiple>
-                                </div>
-                                <div id="preview-container"></div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <hr>
-
                 <!-- aqui va el odontograma -->
 
                 <div class="row">
@@ -178,7 +155,7 @@
                 <hr>
 
                 <div class="d-flex justify-content-left">
-                    <button type="submit" id="guardarBtn" class="btn btn-primary">Crear paciente</button>
+                    <button type="submit" id="guardarBtn" class="btn btn-success">Crear paciente</button>
                 </div>
             </form>
         </div>
@@ -220,16 +197,8 @@
                     url: "{{ route('createPatient.crear') }}",
                     data: formData,
                     success: function(data) {
-                        // Manejar la respuesta del servidor
-                        var pacienteId = data.id;
-                        console.log("ID del paciente:", pacienteId);
                         // Llamar a la función de carga de imágenes pasando el ID del paciente
-                        const files = document.getElementById('images').files;
-                        if (files.length !== 0) {
-                            uploadImages(pacienteId);
-                        } 
                         window.location.href = "{{ url('/pacientes') }}";
-
                     },
                     error: function(xhr, status, error) {
                         // Manejar los errores
@@ -291,44 +260,6 @@
                     }
                 });
             });
-
-            function uploadImages(pacienteId) {
-                const files = document.getElementById('images').files;
-                const formData = new FormData();
-
-                if (files.length === 0) {
-                    alert('Por favor, selecciona al menos una imagen antes de subir.');
-                    return;
-                } else {
-                    for (const file of files) {
-                        formData.append('images[]', file);
-                    }
-                    formData.append('paciente_id', pacienteId);
-                    $.ajax({
-                        url: '{{ route('upload') }}',
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        processData: false,
-                        contentType: false,
-                        data: formData,
-                        success: function(data) {
-                            if (data.success) {
-                                alert('Imágenes subidas con éxito');
-                            } else {
-                                alert('Error al subir imágenes');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error:', error);
-                        }
-                    });
-                }
-
-
-
-            }
 
         }
 </script>

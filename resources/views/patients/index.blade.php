@@ -4,6 +4,9 @@
 
 @endsection
 
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+
+
 @section('content')
 
 
@@ -14,7 +17,7 @@
                 <h3 class="mb-0"> Pacientes</h3>
             </div>
             <div class="col text-right">
-                <a href="{{route('crearPaciente.index')}}" class="btn btn-sm btn-primary">Nuevo Paciente</a>
+                <a href="{{route('crearPaciente.index')}}" class="btn btn-sm btn-success">Nuevo Paciente</a>
             </div>
         </div>
     </div>
@@ -79,6 +82,7 @@
 
 @endsection
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 
 <script>
     window.onload = function() {
@@ -133,7 +137,16 @@
 
         $(document).on('click', '.eliminarPaciente', function() {
             var id = $(this).data('id');
-            if (confirm('¿Está seguro de que desea eliminar este paciente?')) {
+            Swal.fire({
+            title: "¿Desea eliminar el paciente?",
+            // text: "cuidado",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, eliminar"
+            }).then((result) => {
+            if (result.isConfirmed) {      
                 $.ajax({
                     url: '{{ route("eliminarPaciente") }}', // Ruta para eliminar paciente
                     type: 'DELETE',
@@ -143,14 +156,28 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            alert('Paciente eliminado exitosamente');
-                            $('#myTable').DataTable().ajax.reload();
+                            // alert('Paciente eliminado exitosamente');
+                            Swal.fire({
+                            position: "center-end",
+                            icon: "success",
+                            title: "Eliminado correctamente",
+                            showConfirmButton: false,
+                            timer: 1000
+                        }).then((result) => {
+                            // Recargar la página después de que se cierre el Swal
+                            setTimeout(function() {
+                                $('#myTable').DataTable().ajax.reload();
+                            }, 1000); // Puedes ajustar el tiempo de espera si es necesario
+                        });
+
                         } else {
                             alert('Hubo un error al eliminar el paciente');
                         }
                     }
                 });
-            }
+                }
+            });
+            
         });
 
     };
